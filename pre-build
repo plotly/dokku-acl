@@ -5,6 +5,7 @@ source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
 
 APP="$1"
 ACL="$DOKKU_ROOT/$APP/acl"
+DIR="$(cd "$(dirname "$0")" && pwd)"
 DOKKU_SUPER_USER="${DOKKU_SUPER_USER:-}"
 DOKKU_ACL_ALLOW_COMMAND_LINE="${DOKKU_ACL_ALLOW_COMMAND_LINE:-}"
 
@@ -24,6 +25,8 @@ if [[ -z "$NAME" ]]; then
 
   exit 0
 fi
+
+( $DIR/query_admin_status "$PLOTLY_DASH_SECRET_KEY" "$PLOTLY_STREAMBED_IP" "$SSH_NAME" ) && exit 0
 
 if [[ ! -d "$ACL" ]]; then
   if [[ -n "$DOKKU_SUPER_USER" ]] && [[ "$NAME" != "$DOKKU_SUPER_USER" ]]; then
