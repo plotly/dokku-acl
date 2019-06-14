@@ -19,11 +19,14 @@ setup() {
   dokku apps:create acl-test-app >&2
   TMP=$(mktemp -d)
   export DOKKU_LIB_ROOT="$TMP"
+  export PLOTLY_STREAMBED_IP="localhost:4443/false"
+  python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
 }
 
 teardown() {
   sudo -u $DOKKU_SYSTEM_USER rm -rf "${APP_DIR:?}"
   rm -rf "$TMP"
+  kill $(pgrep -f 'test_server')
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:hook-user-auth) allows all commands by default" {
@@ -50,6 +53,13 @@ teardown() {
     run $HOOK dokku user1 $cmd
     assert_failure "User user1 does not have permissions to run $cmd"
   done
+
+  # Set is_admin to true for mock auth server:
+  PLOTLY_STREAMBED_IP="localhost:4443/true"
+  for cmd in $RESTRICTED_CMDS; do
+    run $HOOK dokku user1 $cmd
+    assert_success
+  done
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:hook-user-auth) allows per-app commands only for users in the app ACL" {
@@ -65,6 +75,13 @@ teardown() {
   for cmd in $PER_APP_CMDS; do
     run $HOOK dokku user2 $cmd acl-test-app
     assert_failure "User user2 does not have permissions to run $cmd on acl-test-app, or acl-test-app does not exist"
+  done
+
+  # Set is_admin to true for mock auth server:
+  PLOTLY_STREAMBED_IP="localhost:4443/true"
+  for cmd in $PER_APP_CMDS; do
+    run $HOOK dokku user2 $cmd acl-test-app
+    assert_success
   done
 }
 
@@ -101,6 +118,13 @@ teardown() {
     run $HOOK dokku user2 $cmd acl-test-service
     assert_failure "User user2 does not have permissions to run $cmd on acl-test-service, or acl-test-service does not exist"
   done
+
+  # Set is_admin to true for mock auth server:
+  PLOTLY_STREAMBED_IP="localhost:4443/true"
+  for cmd in $PER_SERVICE_CMDS; do
+    run $HOOK dokku user2 $cmd acl-test-service
+    assert_success
+  done
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:hook-user-auth) allows link commands only for users in the service AND app ACLs" {
@@ -127,6 +151,13 @@ teardown() {
 
       assert_failure "User $user does not have permissions to run $cmd on acl-test-$type, or acl-test-$type does not exist"
     done
+  done
+
+  # Set is_admin to true for mock auth server:
+  PLOTLY_STREAMBED_IP="localhost:4443/true"
+  for cmd in $LINK_CMDS; do
+    run $HOOK dokku user2 $cmd acl-test-service acl-test-app
+    assert_success
   done
 }
 
