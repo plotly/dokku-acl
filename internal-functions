@@ -132,3 +132,8 @@ fn-acl-is-super-user() {
 
   return 1
 }
+
+fn-query-admin-status(){
+  HEADER="X-Plotly-Dash-Secret-Key: $1"
+  curl -sk --header "$HEADER" "https://$2/v2/users/$3/" | jq '.is_admin' | grep -q 'true'
+}
