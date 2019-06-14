@@ -7,10 +7,13 @@ HOOK="${DOKKU_ROOT:?}/plugins/${PLUGIN_COMMAND_PREFIX:?}/pre-build"
 
 setup() {
   dokku apps:create acl-test-app >&2
+  export PLOTLY_STREAMBED_IP="localhost:4443/false"
+  python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
 }
 
 teardown() {
   sudo -u $DOKKU_SYSTEM_USER rm -rf "${APP_DIR:?}"
+  kill $(pgrep -f 'test_server')
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:hook-pre-build) allows write access by default" {
@@ -33,6 +36,11 @@ teardown() {
 
   NAME=admin run $HOOK $APP
   assert_failure "User admin does not have permissions to modify this repository"
+
+  # Set is_admin to true for mock auth server:
+  PLOTLY_STREAMBED_IP="localhost:4443/true"
+  NAME=admin run $HOOK $APP
+  assert_success
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:hook-pre-build) allows only superuser when enabled and no configured users" {
