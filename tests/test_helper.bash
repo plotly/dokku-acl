@@ -8,6 +8,7 @@ export PLUGIN_PATH="$DOKKU_ROOT/plugins"
 export PLUGIN_ENABLED_PATH="$PLUGIN_PATH"
 export PLUGIN_AVAILABLE_PATH="$PLUGIN_PATH"
 export PLUGIN_CORE_AVAILABLE_PATH="$PLUGIN_PATH"
+export PLOTLY_DASH_SECRET_KEY="123abc"
 
 export DOKKU_LIB_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib-root"
 if [[ "$(uname)" == "Darwin" ]]; then
