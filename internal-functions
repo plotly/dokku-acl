@@ -129,5 +129,5 @@ fn-query-admin-status(){
   fi
 
   declare USER_INFO_URL="https://$AUTH_URL/v2/users/$3/"
-  curl -sk --header "$HEADER" "$USER_INFO_URL" | jq '.is_admin' | grep -q 'true'
+  curl -sk --max-time 3 --header "$HEADER" "$USER_INFO_URL" | jq '.is_admin' | grep -q 'true'
 }
