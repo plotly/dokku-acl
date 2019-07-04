@@ -121,6 +121,13 @@ fn-check-service-acl() {
 }
 
 fn-query-admin-status(){
-  HEADER="X-Plotly-Dash-Secret-Key: $1"
-  curl -sk --header "$HEADER" "https://$2/v2/users/$3/" | jq '.is_admin' | grep -q 'true'
+  declare SECRET_KEY="$1" AUTH_URL="$2" USER="$3"
+  local HEADER="X-Plotly-Dash-Secret-Key: $SECRET_KEY"
+
+  if [[ "$PLOTLY_STREAMBED_AUTH_ONLY" == 1 ]]; then
+    AUTH_URL="$AUTH_URL/Auth"
+  fi
+
+  local USER_INFO_URL="https://$AUTH_URL/v2/users/$USER/"
+  curl -sk --max-time 3 --header "$HEADER" "$USER_INFO_URL" | jq '.is_admin' | grep -q 'true'
 }
