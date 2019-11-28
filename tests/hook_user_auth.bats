@@ -55,7 +55,7 @@ teardown() {
   done
 
   # Set is_admin to true for mock auth server:
-  PLOTLY_STREAMBED_HOST="localhost:4443/true"
+  PLOTLY_STREAMBED_HOST="localhost:4443/admin-true"
   for cmd in $RESTRICTED_CMDS; do
     run $HOOK dokku user1 $cmd
     assert_success
@@ -78,7 +78,7 @@ teardown() {
   done
 
   # Set is_admin to true for mock auth server:
-  PLOTLY_STREAMBED_HOST="localhost:4443/true"
+  PLOTLY_STREAMBED_HOST="localhost:4443/admin-true"
   for cmd in $PER_APP_CMDS; do
     run $HOOK dokku user2 $cmd acl-test-app
     assert_success
@@ -120,7 +120,7 @@ teardown() {
   done
 
   # Set is_admin to true for mock auth server:
-  PLOTLY_STREAMBED_HOST="localhost:4443/true"
+  PLOTLY_STREAMBED_HOST="localhost:4443/admin-true"
   for cmd in $PER_SERVICE_CMDS; do
     run $HOOK dokku user2 $cmd acl-test-service
     assert_success
@@ -154,7 +154,7 @@ teardown() {
   done
 
   # Set is_admin to true for mock auth server:
-  PLOTLY_STREAMBED_HOST="localhost:4443/true"
+  PLOTLY_STREAMBED_HOST="localhost:4443/admin-true"
   for cmd in $LINK_CMDS; do
     run $HOOK dokku user2 $cmd acl-test-service acl-test-app
     assert_success

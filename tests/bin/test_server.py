@@ -8,7 +8,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-        if 'true' in self.path:
+        if 'admin-true' in self.path:
             resp = b'{"is_admin": "true"}'
         else:
             resp = b'{"is_admin": "false"}'
