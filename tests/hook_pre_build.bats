@@ -7,7 +7,7 @@ HOOK="${DOKKU_ROOT:?}/plugins/${PLUGIN_COMMAND_PREFIX:?}/pre-build"
 
 setup() {
   dokku apps:create acl-test-app >&2
-  export PLOTLY_STREAMBED_HOST="localhost:4443/false"
+  export PLOTLY_STREAMBED_HOST="localhost:4443/admin-false"
   python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
 }
 
@@ -38,7 +38,7 @@ teardown() {
   assert_failure "User admin does not have permissions to modify this repository"
 
   # Set is_admin to true for mock auth server:
-  PLOTLY_STREAMBED_HOST="localhost:4443/true"
+  PLOTLY_STREAMBED_HOST="localhost:4443/admin-true"
   NAME=admin run $HOOK $APP
   assert_success
 }
