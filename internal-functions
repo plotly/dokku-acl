@@ -120,8 +120,8 @@ fn-check-service-acl() {
   dokku_log_fail "User $SSH_NAME does not have permissions to run $CMD on $SERVICE, or $SERVICE does not exist"
 }
 
-fn-query-admin-status(){
-  declare SECRET_KEY="$1" AUTH_URL="$2" USER="$3"
+fn-query-status(){
+  declare SECRET_KEY="$1" AUTH_URL="$2" USER="$3" FIELD="$4"
   local HEADER="X-Plotly-Dash-Secret-Key: $SECRET_KEY"
 
   if [[ "$PLOTLY_STREAMBED_AUTH_ONLY" == 1 ]]; then
@@ -129,5 +129,5 @@ fn-query-admin-status(){
   fi
 
   local USER_INFO_URL="https://$AUTH_URL/v2/users/$USER/"
-  curl -sk --max-time 3 --header "$HEADER" "$USER_INFO_URL" | jq '.is_admin' | grep -q 'true'
+  curl -sk --max-time 3 --header "$HEADER" "$USER_INFO_URL" | jq ".$FIELD" | grep -q 'true'
 }
