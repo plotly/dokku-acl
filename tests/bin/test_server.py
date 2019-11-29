@@ -10,8 +10,11 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
         if 'admin-true' in self.path:
             resp = b'{"is_admin": "true"}'
+        elif 'creator-true' in self.path:
+            resp = b'{"is_dash_creator": "true"}'
         else:
-            resp = b'{"is_admin": "false"}'
+            resp = b'{"is_dash_creator": "false", "is_admin": "false"}'
+
         self.wfile.write(resp)
 
 test_server_path = os.path.dirname(os.path.realpath(__file__))
