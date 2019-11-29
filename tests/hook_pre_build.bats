@@ -29,6 +29,10 @@ teardown() {
   sudo -u $DOKKU_SYSTEM_USER touch $APP_DIR/acl/user1
 
   NAME=user1 run $HOOK $APP
+  assert_failure "User user1 is not an app creator"
+
+  PLOTLY_STREAMBED_HOST="localhost:4443/creator-true"
+  NAME=user1 run $HOOK $APP
   assert_success
 
   NAME=user2 run $HOOK $APP
@@ -58,6 +62,7 @@ teardown() {
   sudo -u $DOKKU_SYSTEM_USER mkdir -p $APP_DIR/acl
   sudo -u $DOKKU_SYSTEM_USER touch $APP_DIR/acl/user1
 
+  PLOTLY_STREAMBED_HOST="localhost:4443/creator-true"
   NAME=user1 run $HOOK $APP
   assert_success
 
