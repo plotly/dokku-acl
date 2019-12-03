@@ -8,12 +8,15 @@ HOOK="${DOKKU_ROOT:?}/plugins/${PLUGIN_COMMAND_PREFIX:?}/pre-build"
 setup() {
   dokku apps:create acl-test-app >&2
   export PLOTLY_STREAMBED_HOST="localhost:4443/admin-false"
-  python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
+  nohup python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
+  echo $! > /tmp/python.pid
+  echo "Process ID $(cat /tmp/python.pid)"
 }
 
 teardown() {
   sudo -u $DOKKU_SYSTEM_USER rm -rf "${APP_DIR:?}"
-  kill $(pgrep -f 'test_server')
+  kill -quit "$(cat /tmp/python.pid)"
+  ps -p "$(cat /tmp/python.pid)"  >/dev/null && kill -9 "$(cat /tmp/python.pid)"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:hook-pre-build) allows write access by default" {
