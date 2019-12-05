@@ -7,13 +7,16 @@ HOOK="${DOKKU_ROOT:?}/plugins/${PLUGIN_COMMAND_PREFIX:?}/pre-build"
 
 setup() {
   dokku apps:create acl-test-app >&2
-  export PLOTLY_STREAMBED_HOST="localhost:4443/false"
-  python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
+  export PLOTLY_STREAMBED_HOST="localhost:4443/admin-false"
+  nohup python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
+  echo $! > /tmp/python.pid
+  echo "Process ID $(cat /tmp/python.pid)"
 }
 
 teardown() {
   sudo -u $DOKKU_SYSTEM_USER rm -rf "${APP_DIR:?}"
-  kill $(pgrep -f 'test_server')
+  kill -quit "$(cat /tmp/python.pid)"
+  ps -p "$(cat /tmp/python.pid)"  >/dev/null && kill -9 "$(cat /tmp/python.pid)"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:hook-pre-build) allows write access by default" {
@@ -29,6 +32,10 @@ teardown() {
   sudo -u $DOKKU_SYSTEM_USER touch $APP_DIR/acl/user1
 
   NAME=user1 run $HOOK $APP
+  assert_failure "User user1 is not an app creator"
+
+  PLOTLY_STREAMBED_HOST="localhost:4443/creator-true"
+  NAME=user1 run $HOOK $APP
   assert_success
 
   NAME=user2 run $HOOK $APP
@@ -38,7 +45,7 @@ teardown() {
   assert_failure "User admin does not have permissions to modify this repository"
 
   # Set is_admin to true for mock auth server:
-  PLOTLY_STREAMBED_HOST="localhost:4443/true"
+  PLOTLY_STREAMBED_HOST="localhost:4443/admin-true"
   NAME=admin run $HOOK $APP
   assert_success
 }
@@ -58,6 +65,7 @@ teardown() {
   sudo -u $DOKKU_SYSTEM_USER mkdir -p $APP_DIR/acl
   sudo -u $DOKKU_SYSTEM_USER touch $APP_DIR/acl/user1
 
+  PLOTLY_STREAMBED_HOST="localhost:4443/creator-true"
   NAME=user1 run $HOOK $APP
   assert_success
 

@@ -25,7 +25,7 @@ if [[ -z "$NAME" ]] ; then
   exit 0
 fi
 
-fn-query-admin-status "$PLOTLY_DASH_SECRET_KEY" "$PLOTLY_STREAMBED_HOST" "$SSH_NAME" && exit 0
+fn-query-status "$PLOTLY_DASH_SECRET_KEY" "$PLOTLY_STREAMBED_HOST" "$SSH_NAME" "is_admin" && exit 0
 
 if [[ ! -d "$ACL" ]]; then
   if [[ -n "$DOKKU_SUPER_USER" ]] && [[ "$NAME" != "$DOKKU_SUPER_USER" ]]; then
@@ -41,3 +41,7 @@ if [[ ! -f "$ACL_FILE" ]] && [[ "$NAME" != "$DOKKU_SUPER_USER" ]]; then
   echo "User $NAME does not have permissions to modify this repository" >&2
   exit 2;
 fi
+
+fn-query-status "$PLOTLY_DASH_SECRET_KEY" "$PLOTLY_STREAMBED_HOST" "$SSH_NAME" \
+    "is_dash_creator" || dokku_log_fail "User $NAME is not an app creator"
+
