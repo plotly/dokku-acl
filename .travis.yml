@@ -3,5 +3,5 @@ dist: trusty
 language: bash
 env:
   - DOKKU_VERSION=master DOKKU_SYSTEM_GROUP=travis DOKKU_SYSTEM_USER=travis
-  - DOKKU_VERSION=v0.18.5 DOKKU_SYSTEM_GROUP=travis DOKKU_SYSTEM_USER=travis
+  - DOKKU_VERSION=v0.19.11 DOKKU_SYSTEM_GROUP=travis DOKKU_SYSTEM_USER=travis
 script: make test
