@@ -22,7 +22,11 @@ cmd-acl-remove() {
   fi
 
   [[ -f "$ACL_FILE" ]] && rm "$ACL_FILE";
-  [[ -d "$ACL_PATH" ]] && [[ -z "$(ls "$ACL_PATH")" ]] && rmdir "$ACL_PATH";
+  if [[ -d "$ACL_PATH" ]] && [[ -z "$(ls "$ACL_PATH")" ]]; then
+    rmdir "$ACL_PATH"
+  else
+    exit 0
+  fi;
 }
 
 cmd-acl-remove "$@"
