@@ -129,5 +129,5 @@ fn-query-status(){
   fi
 
   local USER_INFO_URL="https://$AUTH_URL/v2/users/$USER/"
-  curl -sk --max-time 3 --header "$HEADER" "$USER_INFO_URL" | jq ".$FIELD" | grep -q 'true'
+  curl -sS --insecure --max-time 10 --retry 5 --header "$HEADER" "$USER_INFO_URL" | jq ".$FIELD" | grep -q 'true'
 }
