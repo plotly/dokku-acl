@@ -78,3 +78,18 @@ assert_output() {
   fi
   assert_equal "$expected" "$output"
 }
+
+setupTestServer() {
+  nohup python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
+  echo $! > /tmp/python.pid
+  echo "Process ID $(cat /tmp/python.pid)"
+  while [ "$STATUS_CODE" != "200" ]; do
+    STATUS_CODE=$(curl -s -o /dev/null -I -w "%{http_code}" http://www.example.org/)
+    echo "Waiting for test server to come up.."
+  done
+}
+
+tearDownTestServer() {
+  kill -quit "$(cat /tmp/python.pid)"
+  ps -p "$(cat /tmp/python.pid)"  >/dev/null && kill -9 "$(cat /tmp/python.pid)"
+}
