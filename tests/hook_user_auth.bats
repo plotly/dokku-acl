@@ -20,13 +20,21 @@ setup() {
   TMP=$(mktemp -d)
   export DOKKU_LIB_ROOT="$TMP"
   export PLOTLY_STREAMBED_HOST="localhost:4443/false"
-  python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
+
+  # Set up test server at the start of tests:
+  if [ "$BATS_TEST_NUMBER" -eq 1 ]; then
+    setupTestServer
+  fi
 }
 
 teardown() {
   sudo -u $DOKKU_SYSTEM_USER rm -rf "${APP_DIR:?}"
   rm -rf "$TMP"
-  kill $(pgrep -f 'test_server')
+
+  # Tear Down test server at the end of all tests:
+  if [ "$BATS_TEST_NUMBER" -eq ${#BATS_TEST_NAMES[@]} ]; then
+    tearDownTestServer
+  fi
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:hook-user-auth) allows all commands by default" {
