@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 export DOKKU_QUIET_OUTPUT=1
-export DOKKU_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dokku"
+
+if [[ -z "$DOKKU_ROOT" ]]; then
+  export BUILD_DOKKU=1
+fi
+export DOKKU_ROOT="${DOKKU_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dokku}"
 export DOKKU_VERSION=${DOKKU_VERSION:-"master"}
 export PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/bin:$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dokku:$PATH"
 export PLUGIN_COMMAND_PREFIX="acl"
@@ -71,4 +75,19 @@ assert_output() {
   else expected="$1"
   fi
   assert_equal "$expected" "$output"
+}
+
+setupTestServer() {
+  nohup python3 "$BATS_TEST_DIRNAME/bin/test_server.py" &
+  echo $! > /tmp/python.pid
+  echo "Process ID $(cat /tmp/python.pid)"
+  while [ "$STATUS_CODE" != "200" ]; do
+    STATUS_CODE=$(curl -s -o /dev/null -I -w "%{http_code}" http://www.example.org/)
+    echo "Waiting for test server to come up.."
+  done
+}
+
+tearDownTestServer() {
+  kill -quit "$(cat /tmp/python.pid)"
+  ps -p "$(cat /tmp/python.pid)"  >/dev/null && kill -9 "$(cat /tmp/python.pid)"
 }
