@@ -141,6 +141,14 @@ fn-query-status(){
     AUTH_URL="$AUTH_URL/Auth"
   fi
 
-  local USER_INFO_URL="https://$AUTH_URL/v2/users/$USER/"
-  curl -sS --insecure --max-time 10 --retry 5 --header "$HEADER" "$USER_INFO_URL" | jq ".$FIELD" | grep -q 'true'
+  local USER_INFO_URL="https://$AUTH_URL/v2/users/$USER/"  
+  RESPONSE=$(curl -sS --insecure --max-time 10 --retry 5 --header "$HEADER" --write-out "\n%{http_code}" "$USER_INFO_URL")
+  RESPONSE_BODY=$(echo "$RESPONSE" | awk "NR==1")
+  STATUS_CODE=$(echo "$RESPONSE" | awk "NR==2")
+
+  if [[ "$STATUS_CODE" != "200" ]]; then
+    dokku_log_fail "Authentication check timed out. Your system might be overloaded. Please try again after some time."
+  fi
+
+  echo "$RESPONSE_BODY" | jq ".$FIELD" | grep -q 'true'
 }
