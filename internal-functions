@@ -134,7 +134,7 @@ fn-query-status(){
   STATUS_CODE="$(echo "$RESPONSE" | awk "NR==2")"
 
   if [[ "$STATUS_CODE" == "503" ]]; then
-    dokku_log_fail "Authentication check timed out. Your system might be overloaded. Please try again after some time."
+    dokku_log_fail "Authentication check timed out. Your system might be overloaded. Please try again in a little bit."
   fi
 
   if [[ "$STATUS_CODE" != "200" ]]; then
