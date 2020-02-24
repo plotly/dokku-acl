@@ -133,8 +133,13 @@ fn-query-status(){
   RESPONSE_BODY="$(echo "$RESPONSE" | awk "NR==1")"
   STATUS_CODE="$(echo "$RESPONSE" | awk "NR==2")"
 
-  if [[ "$STATUS_CODE" != "200" ]]; then
+  if [[ "$STATUS_CODE" == "503" ]]; then
     dokku_log_fail "Authentication check timed out. Your system might be overloaded. Please try again after some time."
+  fi
+
+  if [[ "$STATUS_CODE" != "200" ]]; then
+    dokku_log_fail "A $STATUS_CODE level error occurred during an authentication check. " \ 
+                   "Try again in a little bit or reach out to onpremise.support@plot.ly"
   fi
 
   echo "$RESPONSE_BODY" | jq ".$FIELD" | grep -q 'true'
