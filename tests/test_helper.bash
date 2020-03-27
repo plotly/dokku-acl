@@ -22,8 +22,11 @@ else
 fi
 
 flunk() {
-  { if [ "$#" -eq 0 ]; then cat -
-    else echo "$*"
+  {
+    if [ "$#" -eq 0 ]; then
+      cat -
+    else
+      echo "$*"
     fi
   }
   return 1
@@ -31,7 +34,8 @@ flunk() {
 
 assert_equal() {
   if [ "$1" != "$2" ]; then
-    { echo "expected: $1"
+    {
+      echo "expected: $1"
       echo "actual:   $2"
     } | flunk
   fi
@@ -71,8 +75,10 @@ assert_contains() {
 
 assert_output() {
   local expected
-  if [ $# -eq 0 ]; then expected="$(cat -)"
-  else expected="$1"
+  if [ $# -eq 0 ]; then
+    expected="$(cat -)"
+  else
+    expected="$1"
   fi
   assert_equal "$expected" "$output"
 }
