@@ -37,10 +37,12 @@ DOKKU_ROOT="../path-to-dokku-dir" DOKKU_SYSTEM_USER=$USER make test
 
 ```shell
 acl:add <app> <user>      Allow <user> to access <app>
+acl:allowed <user>        List apps the user has access to
 acl:list <app>            Show list of users with access to <app>
 acl:remove <app> <user>   Revoke <user>'s access to <app>
 
 acl:add-service <type> <service> <user>      Allow <user> to access <service> of type <type>
+acl:allowed-service <type> <user>            List services of type <type> that the user has access to
 acl:list-service <type> <service>            Show list of users with access to <service> of type <type>
 acl:remove-service <type> <service> <user>   Revoke <user>'s access to <service> of type <type>
 ```
