@@ -6,6 +6,13 @@ This plugin adds the ability to restrict dokku commands and push privileges
 for apps to certain users, with the goal of allowing secure multi-tenant dokku
 hosting. (See below for notes and limitations.)
 
+<div align="center">
+  <a href="https://dash.plotly.com/project-maintenance">
+    <img src="https://dash.plotly.com/assets/images/maintained-by-plotly.png" width="400px" alt="Maintained by Plotly">
+  </a>
+</div>
+
+
 ## requirements
 
 - dokku 0.4.0+
